@@ -1,4 +1,4 @@
-const { verifyTokenAndAuth } = require("../middleware/verifyToken");
+const { verifyTokenAndAuth , verifyTokenAndAdmin} = require("../middleware/verifyToken");
 
 const router = require("express").Router();
 
@@ -19,10 +19,23 @@ router.put("/:id", verifyTokenAndAuth, async (req, res) => {
     }
 });
 
+// delete user
 router.delete("/:id", verifyTokenAndAuth ,async (req, res) => {
     try {
         await User.findByIdAndDelete(req.params.id);
         res.status(200).json("User Deleted Successfully");
+
+    } catch (error) {
+        res.status(500).json(error);
+    }
+});
+
+// get user 
+router.get("/find/:id", verifyTokenAndAdmin ,async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id);
+        const { password , ...others } = user._doc;
+        res.status(200).json(others);
 
     } catch (error) {
         res.status(500).json(error);
